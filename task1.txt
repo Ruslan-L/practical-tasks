@@ -1,0 +1,4 @@
+Calculate Fibonacci number in different ways: math function, loop, recursion, tail recursion. 
+What way is better? Perform benchmarks, describe results.
+
+Create separate branch for the task. Don't push to main without permission.
