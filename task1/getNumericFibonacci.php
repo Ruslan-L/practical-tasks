@@ -5,7 +5,7 @@ class Fibonacci
 
     public function __construct()
     {
-        $this->methods = ['math', 'loop', 'recursive', 'tailRecursive'];
+        $this->methods = ['loop', 'recursive', 'tailRecursive', 'math'];
     }
 
     public function getNumeric(string $method, int $position): string
@@ -27,12 +27,10 @@ class Fibonacci
 
             $speed = (microtime(true) - $start);
 
-            if ($results['fast'] < $speed) {
-                $results += [
-                    'fast' => [
-                        'method' => $method,
-                        'speed'  => $speed
-                    ]
+            if (!array_key_exists('fast', $results) || $results['fast']['speed'] > $speed) {
+                $results['fast'] = [
+                    'method' => $method,
+                    'speed'  => $speed
                 ];
             }
 
@@ -84,5 +82,5 @@ class Fibonacci
 
 $fibonacci = new Fibonacci();
 
-echo $fibonacci->getNumeric('loop', 10);
+echo $fibonacci->getNumeric('math', 10);
 echo var_dump($fibonacci->speedTest());
