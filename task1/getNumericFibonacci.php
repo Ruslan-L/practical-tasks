@@ -5,41 +5,58 @@ class Fibonacci
 
     public function __construct()
     {
-        $this->methods = ['loop', 'recursive', 'tailRecursive', 'math'];
+        $this->methods = ['math', 'loop', 'recursive', 'tailRecursive'];
     }
 
-    public function getNumeric(string $method, int $position): string
+    public function getFibonacci(string $method, int $position): string
     {
-        $key = array_search($method, $this->methods, true);
+        $result = in_array($method, $this->methods, true) ?
+            'The fibonacci number is: ' . $this->{$method}($position) :
+            "Unknown method ($method)";
 
-        return $method ? 'Число фибоначи равно: ' . $this->{$this->methods[$key]}($position) : "Неизвестный метод ($method)";
+        return $result . PHP_EOL;
     }
 
-    public function speedTest(): array
+    public function getResultSpeedTest(): void
+    {
+        foreach ($this->speedTest() as $value) {
+            echo $value . PHP_EOL;
+        }
+    }
+
+    public function getMethods(): array
+    {
+        return $this->methods;
+    }
+
+    private function speedTest(): array
     {
         $results = [];
+        $fastMethod = '';
+        $bestTime = 0;
 
         foreach ($this->methods as $method) {
             $start = microtime(true);
             $x     = 0;
 
-            while ($x <= 1000) { $this->{$method}(5); $x++; }
+            while ($x <= 1000) {
+                $this->{$method}(5);
+                $x++;
+            }
 
-            $speed = (microtime(true) - $start);
+            $time = (microtime(true) - $start);
 
-            if (!array_key_exists('fast', $results) || $results['fast']['speed'] > $speed) {
-                $results['fast'] = [
-                    'method' => $method,
-                    'speed'  => $speed
-                ];
+            if ($bestTime > $time || $bestTime === 0) {
+                $fastMethod = $method;
+                $bestTime = $time;
             }
 
             $results += [
-                $method => "Скорость выполения($method): $speed c."
+                $method => "Lead time($method): $time s."
             ];
         }
 
-        $results['fast'] = $results['fast']['method'] . ' - самый быстрый метод, скорость выполнения (' . $results['fast']['speed'] . ' c.)';
+        $results['fast'] = $fastMethod . ' - fastest way, execution time (' . $bestTime . ' s.)';
 
         return $results;
     }
@@ -47,7 +64,7 @@ class Fibonacci
     /* Math */
     private function math(int $position): int
     {
-        return round((((sqrt(5) + 1) / 2) ** --$position) / sqrt(5));
+        return round(pow((sqrt(5)+1)/2, $position) / sqrt(5));
     }
 
     /* Loop */
@@ -62,25 +79,32 @@ class Fibonacci
             $first = $firstSecond;
         }
 
-        return $first;
+        return $position <= 1 ? $position : $second;
     }
 
     /* Recursive */
-    private function recursive(int $position, int $first = 0, int $second = 1): int
+    public function recursive(int $position): int
     {
-        if ($position <= 1) { return $first; }
-
-        return 0 + $this->recursive($position - 1, $second, $second + $first);
+        if ($position === 0) {
+            return 0;
+        }
+        if ($position === 1) {
+            return 1;
+        }
+        return $this->recursive($position - 1) + $this->recursive($position - 2);
     }
+//    private function recursive(int $position, int $first = 0, int $second = 1): int
+//    {
+//        return $position < 1 ? $first : 0 + $this->recursive($position - 1, $second, $second + $first);
+//    }
 
     /* Recursive Tail */
     private function tailRecursive(int $position, int $first = 0, int $second = 1): int
     {
-        return $position <= 1 ? $first : $this->tailRecursive($position - 1, $second, $second + $first);
+        return $position < 1 ? $first : $this->tailRecursive($position - 1, $second, $second + $first);
     }
 }
 
 $fibonacci = new Fibonacci();
-
-echo $fibonacci->getNumeric('math', 10);
-echo var_dump($fibonacci->speedTest());
+echo $fibonacci->getFibonacci('recursive', 6);
+echo $fibonacci->getResultSpeedTest();
