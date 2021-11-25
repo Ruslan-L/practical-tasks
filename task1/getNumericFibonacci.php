@@ -1,41 +1,29 @@
 <?php
 class Fibonacci
 {
-    private array $methods;
+    public const MATCH = 'math';
+    public const LOOP = 'loop';
+    public const RECURSIVE = 'recursive';
+    public const TAIL_RECURSIVE = 'tailRecursive';
 
-    public function __construct()
-    {
-        $this->methods = ['math', 'loop', 'recursive', 'tailRecursive'];
-    }
+    private static array $methods = [self::MATCH, self::LOOP, self::RECURSIVE, self::TAIL_RECURSIVE];
 
     public function getFibonacci(string $method, int $position): string
     {
-        $result = in_array($method, $this->methods, true) ?
-            'The fibonacci number is: ' . $this->{$method}($position) :
-            "Unknown method ($method)";
-
-        return $result . PHP_EOL;
-    }
-
-    public function getResultSpeedTest(): void
-    {
-        foreach ($this->speedTest() as $value) {
-            echo $value . PHP_EOL;
+        if (in_array($method, $this->methods, true)) {
+            return 'The fibonacci number is: ' . $this->{$method}($position);
         }
+
+        return "Unknown method ($method)";
     }
 
-    public function getMethods(): array
-    {
-        return $this->methods;
-    }
-
-    private function speedTest(): array
+    public function getSpeedTest(): array
     {
         $results = [];
         $fastMethod = '';
         $bestTime = 0;
 
-        foreach ($this->methods as $method) {
+        foreach (self::$methods as $key => $method) {
             $start = microtime(true);
             $x     = 0;
 
@@ -70,6 +58,10 @@ class Fibonacci
     /* Loop */
     private function loop(int $position): int
     {
+        if ($position <= 1) {
+            return $position;
+        }
+
         $first = 0;
         $second = 1;
 
@@ -79,7 +71,7 @@ class Fibonacci
             $first = $firstSecond;
         }
 
-        return $position <= 1 ? $position : $second;
+        return $second;
     }
 
     /* Recursive */
@@ -88,23 +80,26 @@ class Fibonacci
         if ($position === 0) {
             return 0;
         }
+
         if ($position === 1) {
             return 1;
         }
+
         return $this->recursive($position - 1) + $this->recursive($position - 2);
     }
-//    private function recursive(int $position, int $first = 0, int $second = 1): int
-//    {
-//        return $position < 1 ? $first : 0 + $this->recursive($position - 1, $second, $second + $first);
-//    }
 
     /* Recursive Tail */
     private function tailRecursive(int $position, int $first = 0, int $second = 1): int
     {
         return $position < 1 ? $first : $this->tailRecursive($position - 1, $second, $second + $first);
     }
+
+//    private function recursive(int $position, int $first = 0, int $second = 1): int
+//    {
+//        return $position < 1 ? $first : 0 + $this->recursive($position - 1, $second, $second + $first);
+//    }
 }
 
 $fibonacci = new Fibonacci();
-echo $fibonacci->getFibonacci('recursive', 6);
-echo $fibonacci->getResultSpeedTest();
+echo $fibonacci->getFibonacci(Fibonacci::RECURSIVE, 6) . PHP_EOL;
+echo implode(PHP_EOL, $fibonacci->getSpeedTest());
