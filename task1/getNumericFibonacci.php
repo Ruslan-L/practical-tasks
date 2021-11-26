@@ -10,7 +10,7 @@ class Fibonacci
 
     public function getFibonacci(string $method, int $position): string
     {
-        if (in_array($method, $this->methods, true)) {
+        if (in_array($method, self::$methods, true)) {
             return 'The fibonacci number is: ' . $this->{$method}($position);
         }
 
@@ -21,7 +21,7 @@ class Fibonacci
     {
         $results = [];
         $fastMethod = '';
-        $bestTime = 0;
+        $bestTime = INF;
 
         foreach (self::$methods as $key => $method) {
             $start = microtime(true);
@@ -34,7 +34,7 @@ class Fibonacci
 
             $time = (microtime(true) - $start);
 
-            if ($bestTime > $time || $bestTime === 0) {
+            if ($bestTime > $time) {
                 $fastMethod = $method;
                 $bestTime = $time;
             }
