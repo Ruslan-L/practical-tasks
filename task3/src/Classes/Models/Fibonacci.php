@@ -4,7 +4,28 @@ namespace App\Models;
 
 class Fibonacci
 {
-    private function sum($first, $second, $enhance = '', $result = ''): string
+    private string $first;
+    private string $second;
+
+    public function __construct()
+    {
+        $this->first = 0;
+        $this->second = 1;
+    }
+
+    public function get(): string
+    {
+        if (strlen($this->second) >= 100) {
+            return $this->second;
+        }
+
+        $this->first = $this->second;
+        $this->second = $this->sum($this->first, $this->second);
+
+        return $this->get();
+    }
+
+    private function sum(string $first, string $second, string $enhance = '', string $result = ''): string
     {
         $nextValueFirst = strlen($first) > 1 ? substr($first, 0, -1) : '';
         $nextValueSecond = strlen($second) > 1 ? substr($second, 0, -1) : '';
@@ -35,10 +56,5 @@ class Fibonacci
         }
 
         return $result;
-    }
-
-    public function get($first = '0', $second = '1'): string
-    {
-        return strlen($second) >= 100 ? $second : $this->get($second, $this->sum($first, $second));
     }
 }
